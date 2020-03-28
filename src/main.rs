@@ -17,9 +17,13 @@
 //#![warn(clippy::cargo, clippy::restriction, missing_docs, warnings)]
 //#![deny(warnings)]
 
+mod app_window;
 mod consts;
 mod error;
+mod message;
 
+use app_window::AppWindow;
+use iced::Application;
 use pico_args::Arguments;
 pub use {consts::*, error::Error};
 
@@ -27,7 +31,9 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 fn main() -> Result<()> {
     // see examples/pico_args.rs for argument parsing example
-    let _args_parser = Arguments::from_env();
+    let args = Arguments::from_env();
+    println!("args: {:?}", args);
+    AppWindow::run(app_window::settings());
 
     Ok(())
 }
