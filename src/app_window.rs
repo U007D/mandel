@@ -26,15 +26,10 @@ impl Application for AppWindow {
     }
 }
 
-#[allow(clippy::integer_arithmetic)] // TODO: Remove when window size determined dynamically
 pub const fn settings() -> Settings {
-    // TODO: Determine screen resolution from `iced`, Rust or OS
-    let width: u32 = 3440 / 2;
-    let height: u32 = 1440 / 2;
-
     Settings {
         window: Window {
-            size: (width, height),
+            size: (800, 600),
             resizable: true,
         },
     }

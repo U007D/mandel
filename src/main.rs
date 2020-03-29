@@ -17,14 +17,19 @@
 //#![warn(clippy::cargo, clippy::restriction, missing_docs, warnings)]
 //#![deny(warnings)]
 
-mod app_window;
+mod adapters;
+//mod app_window;
 mod consts;
 mod error;
 mod message;
+mod ports;
 
-use app_window::AppWindow;
-use iced::Application;
+use adapters::ui::iced::{WindowAdapter, WindowBuilderAdapter};
+//use app_window::AppWindow;
+//use iced::Application;
+use crate::ports::ui::WindowBuilder;
 use pico_args::Arguments;
+use ports::ui::{ScreenDimension, Window};
 pub use {consts::*, error::Error};
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -33,7 +38,9 @@ fn main() -> Result<()> {
     // see examples/pico_args.rs for argument parsing example
     let args = Arguments::from_env();
     println!("args: {:?}", args);
-    AppWindow::run(app_window::settings());
 
-    Ok(())
+    WindowAdapter::new::<WindowBuilderAdapter>()
+        .dimensions(ScreenDimension::Quarter)
+        .build()
+        .open()
 }

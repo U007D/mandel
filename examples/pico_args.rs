@@ -62,7 +62,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 fn parse_width(s: &str) -> Result<u32> {
     s.parse()
-        .map_err(|e| Error::ArgInvalidIntegralValue(e))
+        .map_err(Error::ArgInvalidIntegralValue)
         .and_then(|w| match w > 0 {
             true => Ok(w),
             false => Err(Error::ArgNonPositiveValue(s.to_string())),

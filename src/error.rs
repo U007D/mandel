@@ -1,4 +1,4 @@
-use crate::consts::msg;
+use crate::{consts::msg, ports::ui::RectSize};
 use std::ffi::OsString;
 use thiserror::Error;
 
@@ -8,6 +8,8 @@ use thiserror::Error;
 pub enum Error {
     #[error("{}: {:?}", msg::ERR_ARG_NOT_CONVERTIBLE_TO_UTF_8, 0)]
     ArgNotConvertibleToUtf8(/*#[from]*/ std::ffi::OsString),
+    #[error("{}: {:?}", msg::ERR_ADAPTER_UI_ICED_SCREEN_DIMS_TOO_LARGE, 0)]
+    AdapterUiIcedScreenDimsTooLarge(RectSize),
 }
 
 // TODO: Remove this `From` impl and uncomment `#[from]` attribute above when
