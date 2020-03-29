@@ -1,8 +1,7 @@
-#![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
-#![forbid(bare_trait_objects)]
-#![allow(clippy::match_bool)]
 // To use the `unsafe` keyword, change to `#![allow(unsafe_code)]` (do not remove); aids auditing.
 #![forbid(unsafe_code)]
+#![forbid(bare_trait_objects)]
+#![warn(clippy::all, clippy::nursery, clippy::pedantic, rust_2018_idioms)]
 // Safety-critical application lints
 #![deny(
     clippy::pedantic,
@@ -12,35 +11,35 @@
     clippy::option_unwrap_used,
     clippy::result_unwrap_used
 )]
+#![allow(clippy::match_bool, clippy::iter_nth_zero)]
 
 // Uncomment before ship to reconcile use of possibly redundant crates, debug remnants, missing license files and more
 //#![warn(clippy::cargo, clippy::restriction, missing_docs, warnings)]
 //#![deny(warnings)]
 
 mod adapters;
-//mod app_window;
 mod consts;
 mod error;
 mod message;
 mod ports;
 
-use adapters::ui::iced::{WindowAdapter, WindowBuilderAdapter};
-//use app_window::AppWindow;
-//use iced::Application;
-use crate::ports::ui::WindowBuilder;
-use pico_args::Arguments;
-use ports::ui::{ScreenDimension, Window};
-pub use {consts::*, error::Error};
+use crate::{consts::msg, ports::ui::WindowBuildable};
+use adapters::ui::coffee::{Window, WindowBuilder};
+use error::Error;
+use ports::ui::{ScreenDimension, Windowable};
+use std::env;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 fn main() -> Result<()> {
-    // see examples/pico_args.rs for argument parsing example
-    let args = Arguments::from_env();
+    let args = env::args_os()
+        .map(|oss| oss.to_string_lossy().to_string())
+        .collect::<Vec<_>>();
     println!("args: {:?}", args);
 
-    WindowAdapter::new::<WindowBuilderAdapter>()
-        .dimensions(ScreenDimension::Quarter)
+    Window::new::<WindowBuilder>()
+        .set_dimensions(&ScreenDimension::Quarter)
+        .set_title(msg::WELCOME_TO_MANDEL)
         .build()
         .open()
 }

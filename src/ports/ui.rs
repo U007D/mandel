@@ -1,15 +1,18 @@
+use crate::adapters::ui::coffee::WindowSizeState;
 use crate::Result;
 
-pub trait Window {
-    fn new<WB: WindowBuilder + Default>() -> WB;
+pub trait Windowable {
+    fn new<WB: WindowBuildable + Default>() -> WB;
     fn open(&self) -> Result<()>;
 }
 
-pub trait WindowBuilder {
-    type WindowAdapter: Window;
+pub trait WindowBuildable {
+    type WindowableImpl: Windowable;
 
-    fn build(self) -> Self::WindowAdapter;
-    fn dimensions(self, dim: ScreenDimension) -> Self;
+    fn build(self) -> Self::WindowableImpl;
+    fn set_dimensions(self, sd: &ScreenDimension) -> Self;
+    fn set_title(self, title: impl ToString) -> Self;
+    fn set_window_size_state(self, window_size_state: WindowSizeState) -> Self;
 }
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]

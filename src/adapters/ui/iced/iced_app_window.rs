@@ -22,7 +22,7 @@ impl Application for IcedAppWindow {
 
     fn view(&mut self) -> Element<'_, Message> {
         Column::new()
-            .push(Text::new("Welcome to the Applesauce Mandelbrot app!").size(50))
+            .push(Text::new("Welcome to the \"Applesauce\" Mandelbrot app!").size(50))
             .into()
     }
 }
