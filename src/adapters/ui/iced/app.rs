@@ -1,4 +1,4 @@
-use super::AdditionalSettings;
+use super::AppSettings;
 use crate::{
     ports::ui::{AppBuilderTrait, AppTrait},
     Result,
@@ -6,7 +6,7 @@ use crate::{
 use iced;
 
 pub struct App {
-    pub(super) iced_settings: iced::Settings<AdditionalSettings>,
+    pub(super) iced_settings: iced::Settings<AppSettings>,
 }
 
 impl AppTrait for App {
@@ -24,22 +24,20 @@ impl AppTrait for App {
 impl iced::Application for App {
     type Executor = iced::executor::Default;
     type Message = ();
-    type Flags = AdditionalSettings;
+    type Flags = AppSettings;
 
     fn new(
-        additional_settings: <Self as iced::Application>::Flags,
+        app_settings: <Self as iced::Application>::Flags,
     ) -> (Self, iced::Command<Self::Message>) {
-        (
-            Self {
-                iced_settings: iced::Settings {
-                    window: iced::window::Settings::default(),
-                    flags: additional_settings,
-                    default_font: None,
-                    antialiasing: false,
-                },
+        let mut app = Self {
+            iced_settings: iced::Settings {
+                window: iced::window::Settings::default(),
+                flags: app_settings,
+                default_font: None,
+                antialiasing: false,
             },
-            iced::Command::none(),
-        )
+        };
+        (app, iced::Command::none())
     }
 
     fn title(&self) -> String {
@@ -52,7 +50,7 @@ impl iced::Application for App {
 
     fn view(&mut self) -> iced::Element<'_, Self::Message> {
         iced::Column::new()
-            .push(iced::Text::new("Welcome to the \"Applesauce\" Mandelbrot app_trait!").size(50))
+            .push(iced::Text::new("Welcome to my Mandelbrot app!").size(50))
             .into()
     }
 }

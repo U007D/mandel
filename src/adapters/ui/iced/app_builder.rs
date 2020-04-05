@@ -1,10 +1,11 @@
 use crate::consts::msg;
+use crate::ports::ui::Pair;
 use crate::{
     ports::ui::{AppBuilderTrait, WindowState},
     App, Error, Result,
 };
 use iced;
-use std::convert::TryInto;
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug, Default)]
 pub struct AppBuilder {
@@ -12,35 +13,28 @@ pub struct AppBuilder {
     window_state: Option<WindowState>,
 }
 
-impl AppBuilderTrait for AppBuilder {
-    type AppTraitImpl = App;
-
-    fn build(mut self) -> Result<Self::AppTraitImpl, Error> {
-        let dims = self.window_state.as_ref().map_or_else(
+impl AppBuilder {
+    fn window_dimensions(&self) -> Pair<usize> {
+        self.window_state.as_ref().map_or_else(
             || WindowState::default().dimensions(),
             WindowState::dimensions,
-        );
-        Ok(Self::AppTraitImpl {
-            iced_settings: iced::Settings {
-                window: iced::window::Settings {
-                    size: dims
-                        .try_into()
-                        .map_err(|e| Error::AdapterUiIcedScreenDimsTooLarge(dims, e))?,
-                    resizable: self.window_state.as_ref().map_or_else(
-                        || WindowState::default().is_resizable(),
-                        WindowState::is_resizable,
-                    ),
-                    decorations: true,
-                },
-                flags: AdditionalSettings {
-                    title: self
-                        .title
-                        .take()
-                        .unwrap_or_else(|| String::from(msg::UNTITLED)),
-                },
-                default_font: None,
-                antialiasing: false,
-            },
+        )
+    }
+
+    fn is_window_resizable(&self) -> bool {
+        self.window_state.as_ref().map_or_else(
+            || WindowState::default().is_resizable(),
+            WindowState::is_resizable,
+        )
+    }
+}
+
+impl AppBuilderTrait for AppBuilder {
+    type App = App;
+
+    fn build(self) -> Result<Self::App, Error> {
+        Ok(Self::App {
+            iced_settings: self.try_into()?,
         })
     }
 
@@ -55,7 +49,43 @@ impl AppBuilderTrait for AppBuilder {
     }
 }
 
+impl TryFrom<AppBuilder> for iced::Settings<AppSettings> {
+    type Error = Error;
+
+    fn try_from(mut ab: AppBuilder) -> Result<Self, Self::Error> {
+        Ok(Self {
+            flags: AppSettings::from(ab.title.take()),
+            window: ab.try_into()?,
+            default_font: None,
+            antialiasing: false,
+        })
+    }
+}
+
+impl TryFrom<AppBuilder> for iced::window::Settings {
+    type Error = Error;
+
+    fn try_from(ab: AppBuilder) -> Result<Self, Self::Error> {
+        Ok(Self {
+            size: ab
+                .window_dimensions()
+                .try_into()
+                .map_err(|e| Error::AdapterUiIcedScreenDimsTooLarge(ab.window_dimensions(), e))?,
+            resizable: ab.is_window_resizable(),
+            decorations: true,
+        })
+    }
+}
+
 #[derive(Debug, Clone)]
-pub struct AdditionalSettings {
+pub struct AppSettings {
     pub(super) title: String,
+}
+
+impl From<Option<String>> for AppSettings {
+    fn from(opt_string: Option<String>) -> Self {
+        Self {
+            title: opt_string.unwrap_or_else(|| String::from(msg::UNTITLED)),
+        }
+    }
 }

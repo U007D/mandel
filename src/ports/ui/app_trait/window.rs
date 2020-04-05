@@ -28,25 +28,21 @@ impl From<NamedWindowDimensions> for WindowDimensions {
 #[allow(dead_code)]
 #[derive(Debug, Eq, PartialEq)]
 pub enum WindowState {
-    NonResizable(WindowDimensions),
+    //    NonResizable(WindowDimensions),
     Resizable(WindowDimensions),
-    Maximized,
-    FullScreen,
+    //    Maximized,
+    //    FullScreen,
 }
 
 impl WindowState {
-    pub fn is_resizable(&self) -> bool {
-        match self {
-            Self::Resizable(_) => true,
-            _ => false,
-        }
+    #[allow(clippy::unused_self)]
+    pub const fn is_resizable(&self) -> bool {
+        true
     }
 
     pub fn dimensions(&self) -> Pair<usize> {
         match self {
-            Self::Resizable(wd) | Self::NonResizable(wd) => wd.0,
-            // TODO: Dynamic impl goes here
-            _ => unimplemented!(),
+            Self::Resizable(wd) => wd.0,
         }
     }
 }

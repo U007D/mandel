@@ -11,8 +11,7 @@ version = "0.1.0"
 
 [dependencies]
 thiserror = "^1"
-#coffee = { git = "https://github.com/hecrj/coffee", branch = "master", features = ["vulkan"] }
-iced = { git = "https://github.com/hecrj/iced", branch = "master" }
+iced = { git = "https://github.com/hecrj/iced", branch = "master", features = ["canvas"] }
 num-traits = "0.2.11"
 
 [profile.dev]
