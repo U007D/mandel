@@ -16,6 +16,8 @@ pub enum Error {
     AdapterUiIcedScreenDimsTooLarge(Pair<usize>, core::num::TryFromIntError),
     #[error("{}; {}: {:?}", msg::ERR_CONVERSION_OVERFLOW, msg::CAUSED_BY, 0)]
     ConversionOverflow(#[from] core::num::TryFromIntError),
+    #[error("{}", msg::ERR_INTERNAL_APP_RETURNED_UNEXPECTEDLY)]
+    AppReturnedUnexpectedly,
 }
 
 // Required by error-check operator when converting `Result`s from `TryFrom` and `TryInto`

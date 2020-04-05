@@ -26,7 +26,7 @@ impl From<NamedWindowDimensions> for WindowDimensions {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum WindowState {
     //    NonResizable(WindowDimensions),
     Resizable(WindowDimensions),

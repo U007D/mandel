@@ -1,8 +1,8 @@
-use crate::consts::msg;
-use crate::ports::ui::Pair;
 use crate::{
-    ports::ui::{AppBuilderTrait, WindowState},
-    App, Error, Result,
+    adapters::ui::{iced::app_bootstrapper::AppBootstrapper, iced::app_settings::AppSettings},
+    consts::msg,
+    ports::ui::{AppBuilderTrait, Pair, WindowState},
+    Error, Result,
 };
 use iced;
 use std::convert::{TryFrom, TryInto};
@@ -11,6 +11,7 @@ use std::convert::{TryFrom, TryInto};
 pub struct AppBuilder {
     title: Option<String>,
     window_state: Option<WindowState>,
+    iced_settings: Option<iced::Settings<AppSettings>>,
 }
 
 impl AppBuilder {
@@ -30,21 +31,25 @@ impl AppBuilder {
 }
 
 impl AppBuilderTrait for AppBuilder {
-    type App = App;
+    type App = AppBootstrapper;
+
+    fn new() -> Self {
+        Self::default()
+    }
 
     fn build(self) -> Result<Self::App, Error> {
         Ok(Self::App {
-            iced_settings: self.try_into()?,
+            app_settings: self.try_into()?,
         })
     }
 
     fn set_title(mut self, title: impl ToString) -> Self {
-        self.title = Some(title.to_string());
+        self.title.replace(title.to_string());
         self
     }
 
     fn set_window_state(mut self, window_state: WindowState) -> Self {
-        self.window_state = Some(window_state);
+        self.window_state.replace(window_state);
         self
     }
 }
@@ -52,9 +57,15 @@ impl AppBuilderTrait for AppBuilder {
 impl TryFrom<AppBuilder> for iced::Settings<AppSettings> {
     type Error = Error;
 
-    fn try_from(mut ab: AppBuilder) -> Result<Self, Self::Error> {
+    fn try_from(ab: AppBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
-            flags: AppSettings::from(ab.title.take()),
+            flags: AppSettings {
+                title: ab
+                    .title
+                    .clone()
+                    .unwrap_or_else(|| String::from(msg::UNTITLED)),
+                window_state: ab.window_state.clone().unwrap_or_else(WindowState::default),
+            },
             window: ab.try_into()?,
             default_font: None,
             antialiasing: false,
@@ -74,18 +85,5 @@ impl TryFrom<AppBuilder> for iced::window::Settings {
             resizable: ab.is_window_resizable(),
             decorations: true,
         })
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct AppSettings {
-    pub(super) title: String,
-}
-
-impl From<Option<String>> for AppSettings {
-    fn from(opt_string: Option<String>) -> Self {
-        Self {
-            title: opt_string.unwrap_or_else(|| String::from(msg::UNTITLED)),
-        }
     }
 }

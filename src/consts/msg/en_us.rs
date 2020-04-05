@@ -4,3 +4,5 @@ pub const ERR_CONVERSION_OVERFLOW: &str = "Error: Source value cannot be convert
 value because the conversion overflows the target value";
 pub const CAUSED_BY: &str = "caused by";
 pub const DIMENSIONS: &str = "dimensions";
+pub const ERR_INTERNAL_APP_RETURNED_UNEXPECTEDLY: &str = "Internal error: `iced::Application` \
+returned unexpectedly";

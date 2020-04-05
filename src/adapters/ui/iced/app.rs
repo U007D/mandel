@@ -1,24 +1,8 @@
-use super::AppSettings;
-use crate::{
-    ports::ui::{AppBuilderTrait, AppTrait},
-    Result,
-};
+use crate::adapters::ui::iced::app_settings::AppSettings;
 use iced;
 
 pub struct App {
     pub(super) iced_settings: iced::Settings<AppSettings>,
-}
-
-impl AppTrait for App {
-    #[allow(clippy::new_ret_no_self)]
-    fn new<AB: AppBuilderTrait + Default>() -> AB {
-        AB::default()
-    }
-
-    fn run(self) -> Result<()> {
-        <Self as iced::Application>::run(self.iced_settings);
-        Ok(())
-    }
 }
 
 impl iced::Application for App {
@@ -29,7 +13,7 @@ impl iced::Application for App {
     fn new(
         app_settings: <Self as iced::Application>::Flags,
     ) -> (Self, iced::Command<Self::Message>) {
-        let mut app = Self {
+        let app = Self {
             iced_settings: iced::Settings {
                 window: iced::window::Settings::default(),
                 flags: app_settings,

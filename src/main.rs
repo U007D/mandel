@@ -31,7 +31,7 @@ use crate::{
     consts::msg,
     ports::ui::{AppBuilderTrait, NamedWindowDimensions},
 };
-use adapters::ui::{App, AppBuilder};
+use adapters::ui::AppBuilder;
 use error::Error;
 use ports::ui::{AppTrait, WindowState};
 use std::env;
@@ -44,7 +44,7 @@ fn main() -> Result<()> {
         .collect::<Vec<_>>();
     println!("args: {:?}", args);
 
-    App::new::<AppBuilder>()
+    AppBuilder::new()
         .set_window_state(WindowState::Resizable(
             NamedWindowDimensions::QuarterScreen.into(),
         ))
