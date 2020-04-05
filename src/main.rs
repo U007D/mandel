@@ -11,7 +11,11 @@
     clippy::option_unwrap_used,
     clippy::result_unwrap_used
 )]
-#![allow(clippy::match_bool, clippy::iter_nth_zero)]
+#![allow(
+    clippy::match_bool,
+    clippy::iter_nth_zero,
+    clippy::module_name_repetitions
+)]
 
 // Uncomment before ship to reconcile use of possibly redundant crates, debug remnants, missing license files and more
 //#![warn(clippy::cargo, clippy::restriction, missing_docs, warnings)]
@@ -23,10 +27,13 @@ mod error;
 mod message;
 mod ports;
 
-use crate::{consts::msg, ports::ui::WindowBuildable};
-use adapters::ui::coffee::{Window, WindowBuilder};
+use crate::{
+    consts::msg,
+    ports::ui::{AppBuilderTrait, NamedWindowDimensions},
+};
+use adapters::ui::{App, AppBuilder};
 use error::Error;
-use ports::ui::{ScreenDimension, Windowable};
+use ports::ui::{AppTrait, WindowState};
 use std::env;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -37,9 +44,11 @@ fn main() -> Result<()> {
         .collect::<Vec<_>>();
     println!("args: {:?}", args);
 
-    Window::new::<WindowBuilder>()
-        .set_dimensions(&ScreenDimension::Quarter)
+    App::new::<AppBuilder>()
+        .set_window_state(WindowState::Resizable(
+            NamedWindowDimensions::QuarterScreen.into(),
+        ))
         .set_title(msg::WELCOME_TO_MANDEL)
-        .build()
-        .open()
+        .build()?
+        .run()
 }

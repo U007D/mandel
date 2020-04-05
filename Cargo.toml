@@ -10,9 +10,10 @@ repository = "https://github.com/u007d/mandel"
 version = "0.1.0"
 
 [dependencies]
-# pico-args = "0.3.0"
 thiserror = "^1"
-coffee = { git = "https://github.com/hecrj/coffee", branch = "master", features = ["vulkan"] }
+#coffee = { git = "https://github.com/hecrj/coffee", branch = "master", features = ["vulkan"] }
+iced = { git = "https://github.com/hecrj/iced", branch = "master" }
+num-traits = "0.2.11"
 
 [profile.dev]
 codegen-units = 1
