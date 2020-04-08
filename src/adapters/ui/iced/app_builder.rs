@@ -1,5 +1,5 @@
 use crate::{
-    adapters::ui::{iced::app_bootstrapper::AppBootstrapper, iced::app_settings::AppSettings},
+    adapters::ui::iced::{AppBootstrapper, AppSettings},
     consts::msg,
     ports::ui::{AppBuilderTrait, Pair, WindowState},
     Error, Result,
@@ -39,7 +39,7 @@ impl AppBuilderTrait for AppBuilder {
 
     fn build(self) -> Result<Self::App, Error> {
         Ok(Self::App {
-            app_settings: self.try_into()?,
+            iced_settings: self.try_into()?,
         })
     }
 
