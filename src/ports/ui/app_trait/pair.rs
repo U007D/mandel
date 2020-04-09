@@ -1,4 +1,4 @@
-use num_traits::Num;
+use num::Num;
 use std::convert::TryFrom;
 
 // Newtype required to implement sound `TryFrom`/`TryInto` conversion impls on tuples (orphan rules)
