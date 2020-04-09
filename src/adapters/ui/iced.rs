@@ -1,8 +1,8 @@
-mod app;
-mod app_bootstrapper;
-mod app_builder;
-mod app_settings;
-pub use app::App;
-use app_bootstrapper::AppBootstrapper;
-pub use app_builder::AppBuilder;
-pub use app_settings::AppSettings;
+mod mandel;
+mod mandel_bootstrapper;
+mod mandel_builder;
+mod mandel_settings;
+pub use mandel::Mandel;
+use mandel_bootstrapper::MandelBootstrapper;
+pub use mandel_builder::MandelBuilder;
+pub use mandel_settings::MandelSettings;

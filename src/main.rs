@@ -29,11 +29,11 @@ mod ports;
 
 use crate::{
     consts::msg,
-    ports::ui::{AppBuilderTrait, NamedWindowDimensions},
+    ports::ui::{AppBuilder, NamedWindowDimensions},
 };
-use adapters::ui::AppBuilder;
+use adapters::ui::MandelBuilder;
 use error::Error;
-use ports::ui::{AppTrait, WindowState};
+use ports::ui::{App, WindowState};
 use std::env;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -44,7 +44,7 @@ fn main() -> Result<()> {
         .collect::<Vec<_>>();
     println!("args: {:?}", args);
 
-    AppBuilder::new()
+    MandelBuilder::new()
         .set_window_state(WindowState::Resizable(
             NamedWindowDimensions::QuarterScreen.into(),
         ))

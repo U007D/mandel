@@ -1,7 +1,7 @@
-use crate::{ports::ui::WindowState, AppTrait, Result};
+use crate::{ports::ui::WindowState, App, Result};
 
-pub trait AppBuilderTrait {
-    type App: AppTrait;
+pub trait AppBuilder {
+    type App: App;
 
     fn new() -> Self;
     fn build(self) -> Result<Self::App>;

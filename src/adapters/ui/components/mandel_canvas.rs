@@ -1,11 +1,11 @@
-use crate::ports::ui::{CanvasTrait, CoOrd, Color, Size};
+use crate::ports::ui::{Canvas, CoOrd, Color, Size};
 
 #[derive(Debug)]
 pub struct MandelCanvas {
-    size: Size<<Self as CanvasTrait>::Int>,
+    size: Size<<Self as Canvas>::Int>,
 }
 
-impl CanvasTrait for MandelCanvas {
+impl Canvas for MandelCanvas {
     type Int = usize;
     type Num = f32;
 

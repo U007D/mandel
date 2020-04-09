@@ -1,7 +1,7 @@
 use crate::ports::ui::Rect;
 use num::Num;
 
-pub trait ViewContextTrait {
+pub trait ViewContext {
     type Num: Num;
 
     fn from_rect(rect: Rect<Self::Num>);

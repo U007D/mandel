@@ -1,7 +1,7 @@
 use crate::{
-    adapters::ui::{iced::AppSettings, App},
+    adapters::ui::{iced::MandelSettings, Mandel},
     error::Error,
-    ports::ui::AppTrait,
+    ports::ui::App,
 };
 
 /// Why does `AppBootstrapper` need to exist?
@@ -26,13 +26,13 @@ use crate::{
 /// `Application::new`, where that secondary constructor will instantiate and populate *that*
 /// instance with the custom data required by `mandel.
 #[derive(Debug)]
-pub struct AppBootstrapper {
-    pub iced_settings: iced::Settings<AppSettings>,
+pub struct MandelBootstrapper {
+    pub iced_settings: iced::Settings<MandelSettings>,
 }
 
-impl AppTrait for AppBootstrapper {
+impl App for MandelBootstrapper {
     fn run(self) -> Result<(), Error> {
-        <App as iced::Application>::run(self.iced_settings);
+        <Mandel as iced::Application>::run(self.iced_settings);
         Err(Error::AppReturnedUnexpectedly)
     }
 }

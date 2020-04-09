@@ -1,7 +1,7 @@
 use crate::ports::ui::{CoOrd, Color, Size};
 use num::{Num, PrimInt};
 
-pub trait CanvasTrait {
+pub trait Canvas {
     type Int: PrimInt;
     type Num: Num;
     fn new(size: Size<Self::Int>) -> Self;

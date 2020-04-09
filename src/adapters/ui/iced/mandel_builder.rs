@@ -1,20 +1,20 @@
 use crate::{
-    adapters::ui::iced::{AppBootstrapper, AppSettings},
+    adapters::ui::iced::{MandelBootstrapper, MandelSettings},
     consts::msg,
-    ports::ui::{AppBuilderTrait, Pair, WindowState},
+    ports::ui::{AppBuilder, Pair, WindowState},
     Error, Result,
 };
 use iced;
 use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug, Default)]
-pub struct AppBuilder {
+pub struct MandelBuilder {
     title: Option<String>,
     window_state: Option<WindowState>,
-    iced_settings: Option<iced::Settings<AppSettings>>,
+    iced_settings: Option<iced::Settings<MandelSettings>>,
 }
 
-impl AppBuilder {
+impl MandelBuilder {
     fn window_dimensions(&self) -> Pair<usize> {
         self.window_state.as_ref().map_or_else(
             || WindowState::default().dimensions(),
@@ -30,8 +30,8 @@ impl AppBuilder {
     }
 }
 
-impl AppBuilderTrait for AppBuilder {
-    type App = AppBootstrapper;
+impl AppBuilder for MandelBuilder {
+    type App = MandelBootstrapper;
 
     fn new() -> Self {
         Self::default()
@@ -54,12 +54,12 @@ impl AppBuilderTrait for AppBuilder {
     }
 }
 
-impl TryFrom<AppBuilder> for iced::Settings<AppSettings> {
+impl TryFrom<MandelBuilder> for iced::Settings<MandelSettings> {
     type Error = Error;
 
-    fn try_from(ab: AppBuilder) -> Result<Self, Self::Error> {
+    fn try_from(ab: MandelBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
-            flags: AppSettings {
+            flags: MandelSettings {
                 title: ab
                     .title
                     .clone()
@@ -73,10 +73,10 @@ impl TryFrom<AppBuilder> for iced::Settings<AppSettings> {
     }
 }
 
-impl TryFrom<AppBuilder> for iced::window::Settings {
+impl TryFrom<MandelBuilder> for iced::window::Settings {
     type Error = Error;
 
-    fn try_from(ab: AppBuilder) -> Result<Self, Self::Error> {
+    fn try_from(ab: MandelBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
             size: ab
                 .window_dimensions()

@@ -1,15 +1,15 @@
-use crate::adapters::ui::iced::app_settings::AppSettings;
+use crate::adapters::ui::iced::mandel_settings::MandelSettings;
 use iced;
 
 #[derive(Debug)]
-pub struct App {
-    app_settings: AppSettings,
+pub struct Mandel {
+    app_settings: MandelSettings,
 }
 
-impl iced::Application for App {
+impl iced::Application for Mandel {
     type Executor = iced::executor::Default;
     type Message = ();
-    type Flags = AppSettings;
+    type Flags = MandelSettings;
 
     fn new(app_settings: Self::Flags) -> (Self, iced::Command<Self::Message>) {
         (Self { app_settings }, iced::Command::none())
