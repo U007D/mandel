@@ -1,5 +1,5 @@
 use crate::{
-    adapters::ui::{iced::MandelSettings, Mandel},
+    adapters::ui::{iced::MandelUserSettings, Mandel},
     error::Error,
     ports::ui::App,
 };
@@ -27,12 +27,12 @@ use crate::{
 /// instance with the custom data required by `mandel.
 #[derive(Debug)]
 pub struct MandelBootstrapper {
-    pub iced_settings: iced::Settings<MandelSettings>,
+    pub iced_settings: iced::Settings<MandelUserSettings>,
 }
 
 impl App for MandelBootstrapper {
     fn run(self) -> Result<(), Error> {
-        <Mandel as iced::Application>::run(self.iced_settings);
+        <Mandel<'_> as iced::Application>::run(self.iced_settings);
         Err(Error::AppReturnedUnexpectedly)
     }
 }

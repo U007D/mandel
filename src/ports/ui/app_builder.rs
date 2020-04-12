@@ -1,4 +1,4 @@
-use crate::{ports::ui::WindowState, App, Result};
+use crate::{ports::ui::WindowSettings, App, Result};
 
 pub trait AppBuilder {
     type App: App;
@@ -6,5 +6,5 @@ pub trait AppBuilder {
     fn new() -> Self;
     fn build(self) -> Result<Self::App>;
     fn set_title(self, title: impl ToString) -> Self;
-    fn set_window_state(self, window_state: WindowState) -> Self;
+    fn set_window_state(self, window_state: WindowSettings) -> Self;
 }

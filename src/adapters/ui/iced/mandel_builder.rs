@@ -1,7 +1,7 @@
 use crate::{
-    adapters::ui::iced::{MandelBootstrapper, MandelSettings},
+    adapters::ui::iced::{MandelBootstrapper, MandelUserSettings},
     consts::msg,
-    ports::ui::{AppBuilder, Pair, WindowState},
+    ports::ui::{AppBuilder, Size, WindowSettings},
     Error, Result,
 };
 use iced;
@@ -10,22 +10,21 @@ use std::convert::{TryFrom, TryInto};
 #[derive(Debug, Default)]
 pub struct MandelBuilder {
     title: Option<String>,
-    window_state: Option<WindowState>,
-    iced_settings: Option<iced::Settings<MandelSettings>>,
+    window_state: Option<WindowSettings>,
+    iced_settings: Option<iced::Settings<MandelUserSettings>>,
 }
 
 impl MandelBuilder {
-    fn window_dimensions(&self) -> Pair<usize> {
-        self.window_state.as_ref().map_or_else(
-            || WindowState::default().dimensions(),
-            WindowState::dimensions,
-        )
+    fn window_size(&self) -> Size<usize> {
+        self.window_state
+            .as_ref()
+            .map_or_else(|| WindowSettings::default().size(), WindowSettings::size)
     }
 
     fn is_window_resizable(&self) -> bool {
         self.window_state.as_ref().map_or_else(
-            || WindowState::default().is_resizable(),
-            WindowState::is_resizable,
+            || WindowSettings::default().is_resizable(),
+            WindowSettings::is_resizable,
         )
     }
 }
@@ -48,23 +47,27 @@ impl AppBuilder for MandelBuilder {
         self
     }
 
-    fn set_window_state(mut self, window_state: WindowState) -> Self {
+    fn set_window_state(mut self, window_state: WindowSettings) -> Self {
         self.window_state.replace(window_state);
         self
     }
 }
 
-impl TryFrom<MandelBuilder> for iced::Settings<MandelSettings> {
+impl TryFrom<MandelBuilder> for iced::Settings<MandelUserSettings> {
     type Error = Error;
 
     fn try_from(ab: MandelBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
-            flags: MandelSettings {
+            flags: MandelUserSettings {
                 title: ab
                     .title
                     .clone()
                     .unwrap_or_else(|| String::from(msg::UNTITLED)),
-                window_state: ab.window_state.clone().unwrap_or_else(WindowState::default),
+                window_settings: ab
+                    .window_state
+                    .clone()
+                    .unwrap_or_else(WindowSettings::default),
+                i: 0,
             },
             window: ab.try_into()?,
             default_font: None,
@@ -79,9 +82,9 @@ impl TryFrom<MandelBuilder> for iced::window::Settings {
     fn try_from(ab: MandelBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
             size: ab
-                .window_dimensions()
+                .window_size()
                 .try_into()
-                .map_err(|e| Error::AdapterUiIcedScreenDimsTooLarge(ab.window_dimensions(), e))?,
+                .map_err(|e| Error::AdapterUiIcedScreenDimsTooLarge(ab.window_size(), e))?,
             resizable: ab.is_window_resizable(),
             decorations: true,
         })

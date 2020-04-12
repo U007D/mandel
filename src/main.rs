@@ -33,7 +33,7 @@ use crate::{
 };
 use adapters::ui::MandelBuilder;
 use error::Error;
-use ports::ui::{App, WindowState};
+use ports::ui::{App, WindowSettings};
 use std::env;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -45,7 +45,7 @@ fn main() -> Result<()> {
     println!("args: {:?}", args);
 
     MandelBuilder::new()
-        .set_window_state(WindowState::Resizable(
+        .set_window_state(WindowSettings::Resizable(
             NamedWindowDimensions::QuarterScreen.into(),
         ))
         .set_title(msg::WELCOME_TO_MANDEL)

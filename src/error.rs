@@ -1,4 +1,4 @@
-use crate::{consts::msg, ports::ui::Pair};
+use crate::{consts::msg, ports::ui::Size};
 use thiserror::Error;
 
 /// In an application setting, an `Error` is an `enum` (as opposed to a newtype in a library
@@ -13,7 +13,7 @@ pub enum Error {
         msg::CAUSED_BY,
         1
     )]
-    AdapterUiIcedScreenDimsTooLarge(Pair<usize>, core::num::TryFromIntError),
+    AdapterUiIcedScreenDimsTooLarge(Size<usize>, core::num::TryFromIntError),
     #[error("{}; {}: {:?}", msg::ERR_CONVERSION_OVERFLOW, msg::CAUSED_BY, 0)]
     ConversionOverflow(#[from] core::num::TryFromIntError),
     #[error("{}", msg::ERR_INTERNAL_APP_RETURNED_UNEXPECTEDLY)]

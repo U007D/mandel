@@ -1,4 +1,4 @@
-use super::Pair;
+use crate::ports::ui::Size;
 
 #[allow(dead_code, clippy::pub_enum_variant_names)]
 #[derive(Debug)]
@@ -9,44 +9,44 @@ pub enum NamedWindowDimensions {
 }
 
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct WindowDimensions(Pair<usize>);
+pub struct WindowDimensions(Size<usize>);
 
 impl From<NamedWindowDimensions> for WindowDimensions {
     fn from(nsd: NamedWindowDimensions) -> Self {
         match nsd {
             // TODO: Make proper impl
-            NamedWindowDimensions::EighthScreen => Self(Pair::from((100, 100))),
+            NamedWindowDimensions::EighthScreen => Self(Size::from((100, 100))),
             // TODO: Make dynamic, remove `integer_arithmetic` allowance
             #[allow(clippy::integer_arithmetic)]
-            NamedWindowDimensions::QuarterScreen => Self(Pair::from((3840 / 2, 2160 / 2))),
+            NamedWindowDimensions::QuarterScreen => Self(Size::from((3840 / 2, 2160 / 2))),
             // TODO: Make proper impl
-            NamedWindowDimensions::FullScreen => Self(Pair::from((1000, 1000))),
+            NamedWindowDimensions::FullScreen => Self(Size::from((1000, 1000))),
         }
     }
 }
 
 #[allow(dead_code)]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum WindowState {
+pub enum WindowSettings {
     //    NonResizable(WindowDimensions),
     Resizable(WindowDimensions),
     //    Maximized,
     //    FullScreen,
 }
 
-impl WindowState {
+impl WindowSettings {
     #[allow(clippy::unused_self)]
     pub const fn is_resizable(&self) -> bool {
         true
     }
 
-    pub fn dimensions(&self) -> Pair<usize> {
+    pub fn size(&self) -> Size<usize> {
         match self {
-            Self::Resizable(wd) => wd.0,
+            Self::Resizable(wd) => Size((wd.0).0, (wd.0).1),
         }
     }
 }
-impl Default for WindowState {
+impl Default for WindowSettings {
     fn default() -> Self {
         Self::Resizable(WindowDimensions::from(NamedWindowDimensions::QuarterScreen))
     }

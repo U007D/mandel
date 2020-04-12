@@ -3,11 +3,11 @@ use std::convert::TryFrom;
 
 // Newtype required to implement sound `TryFrom`/`TryInto` conversion impls on tuples (orphan rules)
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct Pair<T>(pub T, pub T)
+pub struct Size<T>(pub T, pub T)
 where
     T: Num + Copy;
 
-impl<T> Pair<T>
+impl<T> Size<T>
 where
     T: Num + Copy,
 {
@@ -16,7 +16,7 @@ where
     }
 }
 
-impl<T> From<(T, T)> for Pair<T>
+impl<T> From<(T, T)> for Size<T>
 where
     T: Num + Copy,
 {
@@ -25,14 +25,14 @@ where
     }
 }
 
-impl<T, U> TryFrom<Pair<U>> for (T, T)
+impl<T, U> TryFrom<Size<U>> for (T, T)
 where
     T: Num + TryFrom<U>,
     U: Num + Copy,
 {
     type Error = <T as TryFrom<U>>::Error;
 
-    fn try_from(pair: Pair<U>) -> Result<Self, Self::Error> {
-        Ok((T::try_from(pair.0)?, T::try_from(pair.1)?))
+    fn try_from(size: Size<U>) -> Result<Self, Self::Error> {
+        Ok((T::try_from(size.0)?, T::try_from(size.1)?))
     }
 }
