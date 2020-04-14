@@ -36,6 +36,16 @@ pub enum WindowSettings {
 
 impl WindowSettings {
     #[allow(clippy::unused_self)]
+    pub const fn is_full_screen(&self) -> bool {
+        false
+    }
+
+    #[allow(clippy::unused_self)]
+    pub const fn is_maximized(&self) -> bool {
+        false
+    }
+
+    #[allow(clippy::unused_self)]
     pub const fn is_resizable(&self) -> bool {
         true
     }

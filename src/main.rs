@@ -45,7 +45,7 @@ fn main() -> Result<()> {
     println!("args: {:?}", args);
 
     MandelBuilder::new()
-        .set_window_state(WindowSettings::Resizable(
+        .set_window_settings(WindowSettings::Resizable(
             NamedWindowDimensions::QuarterScreen.into(),
         ))
         .set_title(msg::WELCOME_TO_MANDEL)
