@@ -1,5 +1,5 @@
 use crate::{
-    adapters::ui::{iced::MandelUserSettings, Mandel},
+    adapters::ui::{iced::MandelUserSettings, MandelApp},
     error::Error,
     ports::ui::App,
 };
@@ -32,7 +32,7 @@ pub struct MandelBootstrapper {
 
 impl App for MandelBootstrapper {
     fn run(self) -> Result<(), Error> {
-        <Mandel<'_> as iced::Application>::run(self.iced_settings);
+        <MandelApp<'_> as iced::Application>::run(self.iced_settings);
         Err(Error::AppReturnedUnexpectedly)
     }
 }

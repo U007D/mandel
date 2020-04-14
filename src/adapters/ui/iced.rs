@@ -1,10 +1,10 @@
 mod components;
-mod mandel;
+mod mandel_app;
 mod mandel_bootstrapper;
 mod mandel_builder;
 mod mandel_user_settings;
 pub use components::mandel_canvas::MandelCanvas;
-pub use mandel::Mandel;
+pub use mandel_app::MandelApp;
 use mandel_bootstrapper::MandelBootstrapper;
 pub use mandel_builder::MandelBuilder;
 pub use mandel_user_settings::MandelUserSettings;

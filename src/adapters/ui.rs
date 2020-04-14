@@ -1,3 +1,3 @@
 // UI adapters //
 mod iced;
-pub use self::iced::{Mandel, MandelBuilder, MandelCanvas};
+pub use self::iced::{MandelApp, MandelBuilder, MandelCanvas};
