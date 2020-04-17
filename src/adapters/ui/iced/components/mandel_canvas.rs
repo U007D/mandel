@@ -1,112 +1,69 @@
 use crate::{
-    ports::ui::{Canvas, Color, Point, Size},
-    Error, Result,
+    adapters::ui::{iced::MandelMessage, MandelApp},
+    ports::ui::{Color, Rect},
 };
-use iced;
-use iced_native::layout::{Limits, Node};
-use iced_native::{Hasher, Layout};
-
-#[derive(Clone, Debug, PartialEq)]
-pub enum DrawCommand {
-    Clear(iced::Color),
-}
 
 #[derive(Clone, Debug)]
-pub struct MandelCanvas<'a> {
-    display_list: Vec<DrawCommand>,
-    iced_color_context: <Self as Canvas>::ForeignColor,
+pub struct MandelCanvas {
+    message: <MandelApp as iced::Application>::Message,
+    view_rect: Rect<f64>,
+    bg_color: Color<f32>,
 }
 
-impl MandelCanvas<'_> {
-    pub fn display_list(&self) -> impl Iterator<Item = &DrawCommand> + '_ {
-        self.display_list.iter()
-    }
-}
-
-impl<'a> Canvas for MandelCanvas<'a> {
-    type Error = Error;
-    type PixelCoordType = usize;
-    type ColorValueType = f32;
-    type ForeignCanvas = iced::Canvas<'a>;
-    type ForeignColor = iced::Color;
-
-    fn new(
-        size: Size<Self::PixelCoordType>,
-        background_color: Color<Self::ColorValueType>,
-    ) -> Result<Self, Self::Error>
-    where
-        Self: Sized,
-    {
-        Ok(Self {
-            display_list: Vec::new(),
-            iced_color_context: background_color.into(),
-        })
+impl MandelCanvas {
+    pub fn new(view_rect: Rect<f64>, bg_color: Color<f32>) -> Self {
+        Self {
+            message: MandelMessage::ClearCanvas(bg_color),
+            view_rect,
+            bg_color,
+        }
     }
 
-    fn clear(&mut self, color: &Color<Self::ColorValueType>) -> &mut Self {
-        self.display_list.push(DrawCommand::Clear(color.into()));
+    pub const fn bg_color(&self) -> Color<f32> {
+        self.bg_color
+    }
 
+    pub fn set_bg_color(&mut self, bg_color: Color<f32>) -> &mut Self {
+        self.bg_color = bg_color;
         self
     }
 
-    #[inline]
-    fn pixel(&self, co_ord: &Point<Self::PixelCoordType>) -> &Color<Self::ColorValueType> {
-        unimplemented!()
+    pub const fn message(&self) -> &<MandelApp as iced::Application>::Message {
+        &self.message
     }
 
-    #[inline]
-    fn set_pixel(
-        &mut self,
-        co_ord: &Point<Self::PixelCoordType>,
-        color: &Color<Self::ColorValueType>,
-    ) -> &mut Self {
-        unimplemented!()
+    pub fn set_message(&mut self, message: <MandelApp as iced::Application>::Message) -> &mut Self {
+        self.message = message;
+        self
     }
 }
 
-impl<Message, Renderer: iced_native::Renderer> iced_native::Widget<Message, Renderer>
-    for MandelCanvas<'_>
-{
-    fn width(&self) -> iced::Length {
-        iced::Length::Fill
-    }
-
-    fn height(&self) -> iced::Length {
-        iced::Length::Fill
-    }
-
-    fn layout(&self, _renderer: &Renderer, limits: &Limits) -> Node {
-        Node::default()
-    }
-
-    fn draw(
-        &self,
-        renderer: &mut Renderer,
-        defaults: &Renderer::Defaults,
-        layout: Layout<'_>,
-        cursor_position: iced::Point,
-    ) -> Renderer::Output {
-        unimplemented!()
-        // self.display_list.iter().for_each(|dc| match dc {
-        //     DrawCommand::Clear(color) => frame.fill(
-        //         &iced::canvas::Path::new(|p| {
-        //             p.rectangle(
-        //                 iced::Point::ORIGIN,
-        //                 iced::Size::new(frame.width(), frame.height()),
-        //             )
-        //         }),
-        //         iced::canvas::Fill::Color(self.iced_color_context),
-        //     ),
-        // });
-    }
-
-    fn hash_layout(&self, state: &mut Hasher) {
-        //unimplemented!()
+impl iced::canvas::Drawable for MandelCanvas {
+    fn draw(&self, frame: &mut iced::canvas::Frame) {
+        match &self.message {
+            MandelMessage::ClearCanvas(color) => {
+                let mandel_space = iced::canvas::Path::new(|path| {
+                    path.rectangle(iced::Point::new(0.0, 0.0), frame.size())
+                });
+                frame.fill(&mandel_space, iced::canvas::Fill::Color(color.into()));
+            }
+        }
     }
 }
 
-impl<'a, M> From<MandelCanvas<'a>> for iced::Element<'a, M> {
-    fn from(mc: MandelCanvas<'a>) -> Self {
-        Self::new(mc)
+impl From<Color<f32>> for iced::Color {
+    fn from(color: Color<f32>) -> Self {
+        Self {
+            r: color.0,
+            g: color.1,
+            b: color.2,
+            a: color.3,
+        }
+    }
+}
+
+impl From<&Color<f32>> for iced::Color {
+    fn from(color: &Color<f32>) -> Self {
+        (*color).into()
     }
 }
