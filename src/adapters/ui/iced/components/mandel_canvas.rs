@@ -1,9 +1,8 @@
 use crate::{
-    ports::ui::{Canvas, CoOrd, Color, Size},
+    ports::ui::{Canvas, Color, Point, Size},
     Error, Result,
 };
 use iced;
-use iced::{Element, Length, Point};
 use iced_native::layout::{Limits, Node};
 use iced_native::{Hasher, Layout};
 
@@ -31,36 +30,34 @@ impl<'a> Canvas for MandelCanvas<'a> {
     type ForeignCanvas = iced::Canvas<'a>;
     type ForeignColor = iced::Color;
 
-    fn new(size: Size<Self::PixelCoordType>) -> Result<Self, Self::Error>
+    fn new(
+        size: Size<Self::PixelCoordType>,
+        background_color: Color<Self::ColorValueType>,
+    ) -> Result<Self, Self::Error>
     where
         Self: Sized,
     {
         Ok(Self {
             display_list: Vec::new(),
-            iced_color_context: iced::Color::TRANSPARENT,
+            iced_color_context: background_color.into(),
         })
     }
 
     fn clear(&mut self, color: &Color<Self::ColorValueType>) -> &mut Self {
-        self.display_list.push(DrawCommand::Clear(iced::Color {
-            r: color.0,
-            g: color.1,
-            b: color.2,
-            a: color.3,
-        }));
+        self.display_list.push(DrawCommand::Clear(color.into()));
 
         self
     }
 
     #[inline]
-    fn pixel(&self, co_ord: &CoOrd<Self::PixelCoordType>) -> &Color<Self::ColorValueType> {
+    fn pixel(&self, co_ord: &Point<Self::PixelCoordType>) -> &Color<Self::ColorValueType> {
         unimplemented!()
     }
 
     #[inline]
     fn set_pixel(
         &mut self,
-        co_ord: &CoOrd<Self::PixelCoordType>,
+        co_ord: &Point<Self::PixelCoordType>,
         color: &Color<Self::ColorValueType>,
     ) -> &mut Self {
         unimplemented!()
@@ -70,15 +67,15 @@ impl<'a> Canvas for MandelCanvas<'a> {
 impl<Message, Renderer: iced_native::Renderer> iced_native::Widget<Message, Renderer>
     for MandelCanvas<'_>
 {
-    fn width(&self) -> Length {
-        Length::Fill
+    fn width(&self) -> iced::Length {
+        iced::Length::Fill
     }
 
-    fn height(&self) -> Length {
-        Length::Fill
+    fn height(&self) -> iced::Length {
+        iced::Length::Fill
     }
 
-    fn layout(&self, renderer: &Renderer, limits: &Limits) -> Node {
+    fn layout(&self, _renderer: &Renderer, limits: &Limits) -> Node {
         Node::default()
     }
 
@@ -87,7 +84,7 @@ impl<Message, Renderer: iced_native::Renderer> iced_native::Widget<Message, Rend
         renderer: &mut Renderer,
         defaults: &Renderer::Defaults,
         layout: Layout<'_>,
-        cursor_position: Point,
+        cursor_position: iced::Point,
     ) -> Renderer::Output {
         unimplemented!()
         // self.display_list.iter().for_each(|dc| match dc {
@@ -104,12 +101,12 @@ impl<Message, Renderer: iced_native::Renderer> iced_native::Widget<Message, Rend
     }
 
     fn hash_layout(&self, state: &mut Hasher) {
-        unimplemented!()
+        //unimplemented!()
     }
 }
 
-impl<'a> From<MandelCanvas<'a>> for iced::Element {
-    fn from(_: MandelCanvas<'a>) -> Self {
-        unimplemented!()
+impl<'a, M> From<MandelCanvas<'a>> for iced::Element<'a, M> {
+    fn from(mc: MandelCanvas<'a>) -> Self {
+        Self::new(mc)
     }
 }

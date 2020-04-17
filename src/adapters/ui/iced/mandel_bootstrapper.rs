@@ -9,10 +9,9 @@ use crate::{
 /// pattern where the constructor is actually `Application::run()`, not `Application::new()`.
 ///
 /// `::run()` instantiates an `iced::Application` and the framework calls `::new()` internally.
-/// Because of this there is no (simple) way for the Builder to return an instance (e.g. `App`)
+/// Because of this there is no way for the Builder to return an instance (e.g. `App`)
 /// that the user can call `iced::Application::run()` on--`iced` [does not allow an instance of
-/// `iced::Application`
-/// to be run](https://github.com/hecrj/iced/issues/265#issuecomment-609941853).
+/// `iced::Application` to be run](https://github.com/hecrj/iced/issues/265#issuecomment-609941853).
 ///
 /// `iced::Settings` must be returned in such a way that `iced::Application` is not invoked and
 /// the user of this crate can call `.run()` on (to conform to this crate's app domain API.  That

@@ -1,24 +1,21 @@
-use crate::adapters::ui::iced::components::mandel_canvas::DrawCommand;
-use crate::consts::msg;
-use crate::ports::ui::Color;
 use crate::{
     adapters::ui::{iced::mandel_user_settings::MandelUserSettings, MandelCanvas},
-    ports::ui::Canvas,
+    consts::msg,
+    ports::ui::{Canvas, Color, Point, Rect},
 };
 use iced;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum MandelMessage {
     ClearCanvas(Color<f32>),
-    ButtonPressed,
 }
 
 #[derive(Debug)]
 pub struct MandelApp<'a> {
-    user_settings: MandelUserSettings,
     canvas: MandelCanvas<'a>,
-    button_state: iced::button::State,
-    press_count: usize,
+    mandelbrot: iced::canvas::layer::Cache<State>,
+    state: State,
+    user_settings: MandelUserSettings,
 }
 
 impl iced::Application for MandelApp<'_> {
@@ -29,11 +26,17 @@ impl iced::Application for MandelApp<'_> {
     fn new(user_settings: Self::Flags) -> (Self, iced::Command<Self::Message>) {
         (
             Self {
-                canvas: MandelCanvas::new(user_settings.window_settings.size())
-                    .expect(msg::ERR_ADAPTER_UI_WINDOW_TOO_LARGE),
+                canvas: MandelCanvas::new(
+                    user_settings.window_settings.size(),
+                    user_settings.canvas_color,
+                )
+                .expect(msg::ERR_ADAPTER_UI_WINDOW_TOO_LARGE),
+                mandelbrot: iced::canvas::layer::Cache::<State>::default(),
+                state: State::new(
+                    Rect(Point(-2.0, 1.5), Point(1.0, -1.5)),
+                    user_settings.canvas_color,
+                ),
                 user_settings,
-                button_state: iced::button::State::default(),
-                press_count: 0,
             },
             iced::Command::none(),
         )
@@ -48,45 +51,67 @@ impl iced::Application for MandelApp<'_> {
             MandelMessage::ClearCanvas(color) => {
                 self.canvas.clear(&color);
             }
-            #[allow(clippy::integer_arithmetic)]
-            MandelMessage::ButtonPressed => {
-                self.press_count += 1;
-                self.canvas.clear(&Color(1.0, 1.0, 0.0, 0.0));
-            }
         };
         iced::Command::none()
     }
 
     #[allow(clippy::integer_arithmetic)]
     fn view(&mut self) -> iced::Element<'_, Self::Message> {
-        self.user_settings.i += 1;
-
-        let button = iced::Button::new(&mut self.button_state, iced::Text::new("Press to Clear"))
-            .on_press(MandelMessage::ButtonPressed);
-
-        let text = iced::Text::new(format!(
-            "Welcome to my Mandelbrot app! ({})",
-            self.press_count
-        ))
-        .size(50);
-
-        let mut content = iced::Column::new()
-            .align_items(iced::Align::Center)
-            .spacing(20)
-            .push(text)
-            .push(button);
-
-        self.canvas.display_list().for_each(|dc| {
-            match dc {
-                DrawCommand::Clear(color) => content.push(self.canvas.clone()),
-            };
-        });
-
-        iced::Container::new(content)
+        let canvas = iced::Canvas::new()
             .width(iced::Length::Fill)
             .height(iced::Length::Fill)
-            .center_x()
-            .center_y()
+            .push(self.mandelbrot.with(&self.state));
+
+        iced::Container::new(canvas)
+            .width(iced::Length::Fill)
+            .height(iced::Length::Fill)
             .into()
+    }
+}
+
+#[derive(Clone, Debug)]
+struct State {
+    message: MandelMessage,
+    view_rect: Rect<f64>,
+    default_canvas_color: Color<f32>,
+}
+
+impl State {
+    pub fn new(view_rect: Rect<f64>, default_canvas_color: Color<f32>) -> Self {
+        Self {
+            message: MandelMessage::ClearCanvas(default_canvas_color),
+            view_rect,
+            default_canvas_color,
+        }
+    }
+}
+
+impl iced::canvas::Drawable for State {
+    fn draw(&self, frame: &mut iced::canvas::Frame) {
+        match &self.message {
+            MandelMessage::ClearCanvas(color) => {
+                let mandel_space = iced::canvas::Path::new(|path| {
+                    path.rectangle(iced::Point::new(0.0, 0.0), frame.size())
+                });
+                frame.fill(&mandel_space, iced::canvas::Fill::Color(color.into()));
+            }
+        }
+    }
+}
+
+impl From<Color<f32>> for iced::Color {
+    fn from(color: Color<f32>) -> Self {
+        Self {
+            r: color.0,
+            g: color.1,
+            b: color.2,
+            a: color.3,
+        }
+    }
+}
+
+impl From<&Color<f32>> for iced::Color {
+    fn from(color: &Color<f32>) -> Self {
+        (*color).into()
     }
 }

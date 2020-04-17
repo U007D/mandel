@@ -29,7 +29,7 @@ mod ports;
 
 use crate::{
     consts::msg,
-    ports::ui::{AppBuilder, NamedWindowDimensions},
+    ports::ui::{AppBuilder, Color, NamedWindowSize},
 };
 use adapters::ui::MandelBuilder;
 use error::Error;
@@ -45,10 +45,11 @@ fn main() -> Result<()> {
     println!("args: {:?}", args);
 
     MandelBuilder::new()
-        .set_window_state(WindowSettings::Resizable(
-            NamedWindowDimensions::QuarterScreen.into(),
+        .set_window_settings(WindowSettings::Resizable(
+            NamedWindowSize::QuarterScreen.into(),
         ))
         .set_title(msg::WELCOME_TO_MANDEL)
+        .set_canvas_color(Color(1.0, 0.0, 0.0, 1.0))
         .build()?
         .run()
 }

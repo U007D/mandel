@@ -1,7 +1,7 @@
 use crate::{
     adapters::ui::iced::{MandelBootstrapper, MandelUserSettings},
     consts::msg,
-    ports::ui::{AppBuilder, Size, WindowSettings},
+    ports::ui::{AppBuilder, Color, Size, WindowSettings},
     Error, Result,
 };
 use iced;
@@ -12,6 +12,7 @@ pub struct MandelBuilder {
     title: Option<String>,
     window_state: Option<WindowSettings>,
     iced_settings: Option<iced::Settings<MandelUserSettings>>,
+    canvas_color: Option<Color<f32>>,
 }
 
 impl MandelBuilder {
@@ -31,6 +32,7 @@ impl MandelBuilder {
 
 impl AppBuilder for MandelBuilder {
     type App = MandelBootstrapper;
+    type ColorValueType = f32;
 
     fn new() -> Self {
         Self::default()
@@ -42,13 +44,18 @@ impl AppBuilder for MandelBuilder {
         })
     }
 
-    fn set_title(mut self, title: impl ToString) -> Self {
+    fn set_title<S: ToString>(mut self, title: S) -> Self {
         self.title.replace(title.to_string());
         self
     }
 
-    fn set_window_state(mut self, window_state: WindowSettings) -> Self {
+    fn set_window_settings(mut self, window_state: WindowSettings) -> Self {
         self.window_state.replace(window_state);
+        self
+    }
+
+    fn set_canvas_color(mut self, canvas_color: Color<Self::ColorValueType>) -> Self {
+        self.canvas_color = Some(canvas_color);
         self
     }
 }
@@ -56,20 +63,21 @@ impl AppBuilder for MandelBuilder {
 impl TryFrom<MandelBuilder> for iced::Settings<MandelUserSettings> {
     type Error = Error;
 
-    fn try_from(ab: MandelBuilder) -> Result<Self, Self::Error> {
+    fn try_from(mb: MandelBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
             flags: MandelUserSettings {
-                title: ab
+                title: mb
                     .title
                     .clone()
                     .unwrap_or_else(|| String::from(msg::UNTITLED)),
-                window_settings: ab
+                window_settings: mb
                     .window_state
                     .clone()
                     .unwrap_or_else(WindowSettings::default),
                 i: 0,
+                canvas_color: mb.canvas_color.unwrap_or_else(Color::default),
             },
-            window: ab.try_into()?,
+            window: mb.try_into()?,
             default_font: None,
             antialiasing: false,
         })
@@ -79,13 +87,13 @@ impl TryFrom<MandelBuilder> for iced::Settings<MandelUserSettings> {
 impl TryFrom<MandelBuilder> for iced::window::Settings {
     type Error = Error;
 
-    fn try_from(ab: MandelBuilder) -> Result<Self, Self::Error> {
+    fn try_from(mb: MandelBuilder) -> Result<Self, Self::Error> {
         Ok(Self {
-            size: ab
+            size: mb
                 .window_size()
                 .try_into()
-                .map_err(|e| Error::AdapterUiIcedScreenDimsTooLarge(ab.window_size(), e))?,
-            resizable: ab.is_window_resizable(),
+                .map_err(|e| Error::AdapterUiIcedScreenDimsTooLarge(mb.window_size(), e))?,
+            resizable: mb.is_window_resizable(),
             decorations: true,
         })
     }

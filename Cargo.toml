@@ -11,9 +11,10 @@ version = "0.1.0"
 
 [dependencies]
 thiserror = "^1"
-iced = { version = "0.1", branch = "master", features = ["canvas"] }
+iced = { version = "0.1", features = ["canvas"] }
 iced_native = "0.2"
 num = "0.2.1"
+iced_wgpu = "0.2.1"
 [profile.dev]
 codegen-units = 1
 debug = true

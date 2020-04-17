@@ -2,25 +2,22 @@ use crate::ports::ui::Size;
 
 #[allow(dead_code, clippy::pub_enum_variant_names)]
 #[derive(Debug)]
-pub enum NamedWindowDimensions {
+pub enum NamedWindowSize {
     EighthScreen,
     FullScreen,
     QuarterScreen,
 }
 
-#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
-pub struct WindowDimensions(Size<usize>);
-
-impl From<NamedWindowDimensions> for WindowDimensions {
-    fn from(nsd: NamedWindowDimensions) -> Self {
-        match nsd {
+impl From<NamedWindowSize> for Size<usize> {
+    fn from(nwd: NamedWindowSize) -> Self {
+        match nwd {
             // TODO: Make proper impl
-            NamedWindowDimensions::EighthScreen => Self(Size::from((100, 100))),
+            NamedWindowSize::EighthScreen => Self::from((100, 100)),
             // TODO: Make dynamic, remove `integer_arithmetic` allowance
             #[allow(clippy::integer_arithmetic)]
-            NamedWindowDimensions::QuarterScreen => Self(Size::from((3840 / 2, 2160 / 2))),
+            NamedWindowSize::QuarterScreen => Self::from((3840 / 2, 2160 / 2)),
             // TODO: Make proper impl
-            NamedWindowDimensions::FullScreen => Self(Size::from((1000, 1000))),
+            NamedWindowSize::FullScreen => Self::from((1000, 1000)),
         }
     }
 }
@@ -29,7 +26,7 @@ impl From<NamedWindowDimensions> for WindowDimensions {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum WindowSettings {
     //    NonResizable(WindowDimensions),
-    Resizable(WindowDimensions),
+    Resizable(Size<usize>),
     //    Maximized,
     //    FullScreen,
 }
@@ -42,12 +39,12 @@ impl WindowSettings {
 
     pub fn size(&self) -> Size<usize> {
         match self {
-            Self::Resizable(wd) => Size((wd.0).0, (wd.0).1),
+            Self::Resizable(wd) => Size(wd.0, wd.1),
         }
     }
 }
 impl Default for WindowSettings {
     fn default() -> Self {
-        Self::Resizable(WindowDimensions::from(NamedWindowDimensions::QuarterScreen))
+        Self::Resizable(NamedWindowSize::QuarterScreen.into())
     }
 }
